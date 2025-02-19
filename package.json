@@ -1,0 +1,15 @@
+{
+  "name": "testcommunitystinder",
+  "version": "1.0.0",
+  "description": "tinder for test community",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
+  },
+  "author": "Dyuti Sunder Dutta",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
