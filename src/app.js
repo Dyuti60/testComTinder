@@ -18,7 +18,8 @@ app.patch('/user',(req,res)=>{
 app.delete('/user',(req,res)=>{
     res.send("User deleted successfully from database")
 })
-app.use('/test',(req,res)=>{
+app.use('/test/:testId/:testDesc',(req,res)=>{
+    console.log(req.params)
     res.send("Hello from Test")
 })
 

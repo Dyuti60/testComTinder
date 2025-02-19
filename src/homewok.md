@@ -21,4 +21,7 @@
 - create a test API call
 - create a test post call
 - Write logic to handle GET, POST, PATCH, DELETE API Calls and test them on Postman
--
+- Explore routing and use of ?, *, (), + in the routes
+- Use of regex in routes /a/, /.*fly$/
+- Reading query params in routes
+- Reading dynamic params in routes
