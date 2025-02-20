@@ -45,3 +45,8 @@
 - Create a user schema, create a user model
 - Create POST /signup API to add data to database
 - Push some documents using API calls from Postman
+- Error Handling using try/catch 
+-----
+- JS Object vs JSON Object
+- Add express.json middleware to app
+- Make signup api dynamic to receive data from end user

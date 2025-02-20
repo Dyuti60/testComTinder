@@ -5,14 +5,12 @@ const {userModel} = require('./models/user')
 // Create an express server application
 const app = express()
 
+// Middleware to parse JSON request bodies
+app.use(express.json())
+
 app.post('/signup', async (req, res) => {
     // Creating a new instace of user Model
-    const user = new userModel({
-        firstName: "Sachin",
-        lastName: "Tendulkar",
-        emailId: "sachin@gmail.com",
-        age: 27
-    })
+    const user = new userModel(req.body)
     try{
         await user.save()
         res.send("User Added Succcessfully")
