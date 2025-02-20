@@ -25,3 +25,23 @@
 - Use of regex in routes /a/, /.*fly$/
 - Reading query params in routes
 - Reading dynamic params in routes
+-------
+- Multiple Route Handlers - Play with code
+- next()
+- next functionand errors along with res.send()
+- app.use('/route', rH, [rH2, rH3], rH4, rH5)
+- What is a middleware? Why do we need it?
+- How express JS basically handles requests behind the scenes
+- app.use vs app.all
+- Write a dummy auth middleware for admin
+- Write a dummy auth middleware for all user route except /user/login
+- Error handling using app.use('',(err,req,res,next)=>{})
+- try catch block to handle errors
+-------
+- Create a free cluster in mongo db atlas
+- Install Mongoose library
+- Connect your application to database <connectionURL>/testTinder
+- Call the connectDB function and connect to database before starting the application
+- Create a user schema, create a user model
+- Create POST /signup API to add data to database
+- Push some documents using API calls from Postman

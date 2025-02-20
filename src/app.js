@@ -1,33 +1,36 @@
 const express = require('express');
+const {adminAuth} = require('./middleware/auth')
+const {connectDb} = require('./config/database')
+const {userModel} = require('./models/user')
 // Create an express server application
 const app = express()
 
-app.get('/user',(req,res)=>{
-    res.send({
-        name: "Dyuti",
-        age: 26,
-        location: "India"
+app.post('/signup', async (req, res) => {
+    // Creating a new instace of user Model
+    const user = new userModel({
+        firstName: "Sachin",
+        lastName: "Tendulkar",
+        emailId: "sachin@gmail.com",
+        age: 27
     })
-})
-app.post('/user',(req,res)=>{
-    res.send("User created successfully in database")
-})
-app.patch('/user',(req,res)=>{
-    res.send("User updated successfully in database")
-})
-app.delete('/user',(req,res)=>{
-    res.send("User deleted successfully from database")
-})
-app.use('/test/:testId/:testDesc',(req,res)=>{
-    console.log(req.params)
-    res.send("Hello from Test")
+    try{
+        await user.save()
+        res.send("User Added Succcessfully")
+    }catch(err){
+        console.error(err.message)
+        res.status(500).send("Eror savinng the user: "+err.message)
+    }
+
 })
 
-app.use('/',(req,res)=>{
-    res.send("Namaste Dyuti")
-})
+connectDb()
+    .then(()=>{
+        console.log("Database connected successfully")
+        app.listen(7777,()=>{
+            console.log('Server is running on port 7777')
+        })
+    })
+    .catch((err)=>{
+        console.err("Database connection error")
+    })
 
-// Create a server and listen to port 3000
-app.listen(7777,()=>{
-    console.log('Server is running on port 7777')
-})
