@@ -58,7 +58,8 @@ app.post('/login',async(req,res)=>{
             throw new Error('Invalid Credentials')
         }else{
             // Generate JWT token
-            const token = jwt.sign({_id: user._id},"TestCommTinder$18June", {expiresIn:"1h"})
+            // const token = await jwt.sign({_id: user._id},"TestCommTinder$18June", {expiresIn:"1h"})
+            const token = await user.getJWT()
             res.cookie('token',token, {expires: new Date(Date.now()+1*3600000)})
             res.send(`${user.firstName} logged in successfully`)
         }
