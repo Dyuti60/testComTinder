@@ -50,10 +50,11 @@ app.post('/login',async(req,res)=>{
         if (!user){
             throw new Error('Invalid Credentials')
         }
-        // get the pasword hash for the email id
-        const passwordHash = user.password
-        // Whethere password is correct for the email id
-        const isPasswordvalid = await bcrypt.compare(password,passwordHash)
+        // // get the pasword hash for the email id
+        // const passwordHash = user.password
+        // // Whethere password is correct for the email id
+        // const isPasswordvalid = await bcrypt.compare(password,passwordHash)
+        const isPasswordvalid = await user.getPasswordVerified(password)
         if (!isPasswordvalid){
             throw new Error('Invalid Credentials')
         }else{
