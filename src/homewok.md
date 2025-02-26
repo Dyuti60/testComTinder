@@ -69,5 +69,8 @@
 - add timestamps to the user schema
 - Add API level validation on patch request and signup post api
 - Data Sanitization Add API validation for each fields
+- Install Validator
+- Explore Validator function - can be used in schema and API level validations - password, email, url
+
 
 
