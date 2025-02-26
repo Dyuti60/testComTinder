@@ -2,6 +2,8 @@ const express = require('express');
 const {adminAuth} = require('./middleware/auth')
 const {connectDb} = require('./config/database')
 const {User} = require('./models/user')
+const {validateSignUpData} = require('./utils/validation')
+const bcrypt = require('bcrypt')
 // Create an express server application
 const app = express()
 
@@ -9,14 +11,24 @@ const app = express()
 app.use(express.json())
 
 app.post('/signup', async (req, res) => {
-    // Creating a new instace of user Model
-    const user = new User(req.body)
+    //Validating Data
     try{
+    validateSignUpData(req)
+    // Encrypt Password
+    const {password} = req.body
+    const passwordHash = await bcrypt.hash(password, 10)
+    console.log(passwordHash)
+    // Creating a new instace of user Model
+    const user = new User({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        emailId: req.body.emailId,
+        password: passwordHash,
+    })
         await user.save()
         res.send("User Added Succcessfully")
     }catch(err){
-        console.error(err.message)
-        res.status(500).send("Eror savinng the user: "+err.message)
+        res.status(500).send("ERROR: "+err.message)
     }
 
 })
@@ -91,7 +103,7 @@ app.patch('/user/:userId',async (req,res)=>{
                 throw new Error("Skills length exceeded")
             }
         }
-        
+
         const user = await User.findByIdAndUpdate({_id:userId}, updateData, {returnDocument:"after", runValidators:true})
         if (!user){
             throw new Error("User Id not found")

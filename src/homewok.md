@@ -71,6 +71,12 @@
 - Data Sanitization Add API validation for each fields
 - Install Validator
 - Explore Validator function - can be used in schema and API level validations - password, email, url
+- never trust  req.body
+----------------------
+- Validate data in signup API using validator funtion only accepts four fields
+- Install bcrypt library
+- Create Password hash using bcrypt.hash and save the user in encrypted password
+
 
 
 
