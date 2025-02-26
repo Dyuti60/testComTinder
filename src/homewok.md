@@ -76,7 +76,8 @@
 - Validate data in signup API using validator funtion only accepts four fields
 - Install bcrypt library
 - Create Password hash using bcrypt.hash and save the user in encrypted password
-
+- Create Login API
+- Compare passwords and throw errors if email or password is invalid
 
 
 
