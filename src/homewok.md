@@ -88,6 +88,20 @@
 - userAuth Middleware
 - Add the userAuth middleware in profile and create a sendConnectionRequest API
 - set the expiry of JWT token and Cookies
+----------------------
+- Go and explore Tinder API 
+- Create a list of all APIs can thinks of for testcommtinder
+- Create multiple routes under respective routes
+- Read Documentation for express.Router
+- Create routes folder for managing auth, profile, connectionrequest, user
+- Create authRouter, profileRouter, connectionRequestRouter, userRouter
+- Import these routers in app.js
+- Create POST /logout API
+- Create PATCH /profile/edit API
+- Create PATCH /profile/password API
+- Make sure validate all data in POST and PATCH API
+
+
 
 
 
