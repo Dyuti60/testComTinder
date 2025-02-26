@@ -50,3 +50,20 @@
 - JS Object vs JSON Object
 - Add express.json middleware to app
 - Make signup api dynamic to receive data from end user
+- User.findOne with duplicate email id, which object will be returned
+- API - Get user by email
+- API - Feed API - Get feed - get all the users from the database
+- API - Get user by ID
+- Create a delete user API
+- Difference between Patch and Put
+- API - Update a user
+- Explore the Model Methods Section - from Mongoose Documentation
+- Explore Options in a findOne, findIdAndUpdate etc. 
+- Create an API - Update a user using Email Id
+----------------
+- Explore schema type tions from the documentation
+- add required, unique, lowercase, min, max, trim
+- add default
+- create a custom validation function for gender
+- improve the db schema - put all apprpriate validations on each fiels in schema
+- add timestamps to the user schema
