@@ -76,16 +76,28 @@ app.delete('/user',async (req,res)=>{
         res.status(400).send("Error deleting the user: "+err.message)
     }
 })
-app.patch('/user',async (req,res)=>{
+app.patch('/user/:userId',async (req,res)=>{
+    const userId= req.params?.userId
+    const updateData = req.body
     try{
-        const userId= req.body.userId
-        const updateData = req.body
+        const ALLOWED_UPDATES = ["photoUrl","about","gender","age","skills"]
+        const isAllowedUpdates = Object.keys(updateData).every((k)=>ALLOWED_UPDATES.includes(k))
+        
+        if(!isAllowedUpdates){
+            throw new Error("Update not allowed")
+        }
+        if (updateData.skills!=undefined){ 
+            if(updateData?.skills.length>10){
+                throw new Error("Skills length exceeded")
+            }
+        }
+        
         const user = await User.findByIdAndUpdate({_id:userId}, updateData, {returnDocument:"after", runValidators:true})
         if (!user){
-            return res.status(404).send("User Id not found")
-        }else{
-        res.send("User updated successfully")
+            throw new Error("User Id not found")
         }
+        res.send("User updated successfully")
+        
     }catch(err){
         console.error(err.message)
         res.status(404).send("Error updating the user: "+err.message)
