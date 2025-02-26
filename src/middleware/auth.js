@@ -1,14 +1,23 @@
+const jwt = require('jsonwebtoken')
+const {User} = require('../models/user')
 
-const adminAuth = (req,res,next)=>{
-    console.log("Admin Auht is getting Checked")
-    const token = "xyz"
-    const isAuthorized = "xyz"
-    if (isAuthorized===token){
-        console.log("Admin Access Granted")
+const userAuth = async (req,res,next)=>{
+    // Job of this middleware is:
+    // Read the token from the request cookies
+    // Validate the token
+    // Find the user
+    try{
+        const {token} = req.cookies
+        if (!token) throw new Error('Invalid token')
+        const decodedMessage = await jwt.verify(token,"TestCommTinder$18June")
+        const user = await User.findOne({
+            _id: decodedMessage._id,
+        })
+        if (!user) throw new Error('User not found')
+        req.user = user
         next()
-    }else{
-        console.log("Admin Access Denied")
-        res.status(401).send("Unauthorized Access")
+    }catch(err){
+        res.status(403).send('Unauthorized Access: '+err.message)
     }
 }
-module.exports ={adminAuth}
+module.exports ={userAuth}
