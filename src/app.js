@@ -1,4 +1,6 @@
 const express = require('express');
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
 const {adminAuth} = require('./middleware/auth')
 const {connectDb} = require('./config/database')
 const {User} = require('./models/user')
@@ -10,6 +12,7 @@ const app = express()
 
 // Middleware to parse JSON request bodies
 app.use(express.json())
+app.use(cookieParser())
 
 app.post('/signup', async (req, res) => {
     //Validating Data
@@ -54,10 +57,32 @@ app.post('/login',async(req,res)=>{
         if (!isPasswordvalid){
             throw new Error('Invalid Credentials')
         }else{
+            // Generate JWT token
+            const token = jwt.sign({_id: user._id},"TestCommTinder$18June")
+            res.cookie('token',token)
             res.send(`${user.firstName} logged in successfully`)
         }
     }catch(err){
         res.status(400).send("Error logging in: "+err.message)
+    }
+})
+app.get('/profile',async(req, res)=>{
+    try{
+        const {token} = req.cookies
+        if (!token){
+            throw new Error('Token not found')
+        }
+        //Validate token
+        const decodedMessage = await jwt.verify(token,"TestCommTinder$18June")
+        const profileData = await User.findOne({
+            _id: decodedMessage._id
+        })
+        if (!profileData){
+            throw new Error('User not found')
+        }
+        res.send(profileData)
+    }catch(err){
+        res.status(400).send("Unauthorized Access: "+err.message)
     }
 })
 // Get user by email
