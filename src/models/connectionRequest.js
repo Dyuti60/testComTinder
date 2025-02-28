@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 const connectionRequestSchema = mongoose.Schema({
     fromUserId:{
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     toUserId:{
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     status:{
@@ -26,7 +28,7 @@ connectionRequestSchema.index({
 })
 
 // pre schema validation
-connectionRequestSchema.pre("save",function(){
+connectionRequestSchema.pre("save",function(next){
     const connectionRequest = this
     // check if the fromUserId is same as the toUserId
     if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){

@@ -110,8 +110,11 @@
 - Read more about indexes in Mongodb
 - why do we need index - adv and disadv
 - Read article about compound index
-- 
-
+------------------
+- Write codes with proper validation for POST /request/review/:status/:requestUserId
+- Thought Process POST VS GET
+- Read about ref and populate
+- Create GET /user/requests/receive/ with all the checks 
 
 
 

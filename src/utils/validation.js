@@ -17,4 +17,5 @@ const validateEditProfileData = (req)=>{
     return isAllowedUpdates
 }
 
+
 module.exports ={validateSignUpData, validateEditProfileData}

@@ -3,8 +3,8 @@ const {userAuth} = require('../middleware/auth')
 const {connectionRequestModel} = require('../models/connectionRequest')
 const {User} = require('../models/user')
 const userRouter = express.Router()
-
-userRouter.get('/user/feeds',userAuth,async(req,res)=>{
+const USER_SAFE_DATA = "firstName lastName photoUrl age gender skills about"
+userRouter.get('/registerdUsers',userAuth,async(req,res)=>{
     try{
         // const invalidConnectionRequest = await connectionRequestModel.find({
         //     $and:[
@@ -34,6 +34,39 @@ userRouter.get('/user/feeds',userAuth,async(req,res)=>{
         res.status(400).json({message: `Error: ${err.message}`})
     }
 })
+userRouter.get('/user/feed',userAuth,async(req,res)=>{
+
+})
+userRouter.get('/user/myConnections',userAuth,async(req,res)=>{
+    try{
+        const loginUserId = req.user._id
+        const userConnections = await connectionRequestModel.find({
+            status:"accepted",
+            $or:[
+                {toUserId: loginUserId},
+                {fromUserId: loginUserId}
+            ]
+        }).populate('fromUserId',USER_SAFE_DATA).populate('toUserId',USER_SAFE_DATA)
+        if(!userConnections){
+            return res.status(404).json({message: "No Connections available"})
+        }else{
+            const data = userConnections.map((row)=>
+                {
+                if(row.toUserId._id.equals(req.user._id)){
+                    return row.fromUserId
+                }else if(row.fromUserId._id.equals(req.user._id)){
+                    return row.toUserId
+                }
+            })
+            res.json({
+                message: `All Connections of ${req.user.firstName} ${req.user.lastName} fetched successfully`,
+                data: data
+            })
+        }
+    }catch(err){
+        res.status(400).json({message: `Error: ${err.message}`})
+    }
+})
 userRouter.get('/user/request/sent',userAuth,async(req,res)=>{
     try{
         const userInterestedInConnections = await connectionRequestModel.find({
@@ -41,7 +74,7 @@ userRouter.get('/user/request/sent',userAuth,async(req,res)=>{
                 {status: "interested"},
                 {fromUserId: req.user._id.toString()}
             ]
-        })
+        }).populate('toUserId',['firstName', 'lastName'])
         if (userInterestedInConnections.length > 0){
             res.json({
                 message: `All Connection Requests Sent by ${req.user.firstName} ${req.user.lastName} fetched successfully`,
@@ -62,7 +95,7 @@ userRouter.get('/user/request/ignored',userAuth,async(req,res)=>{
                 {status: "ignored"},
                 {fromUserId: req.user._id.toString()}
             ]
-        })
+        }).populate('toUserId',['firstName', 'lastName'])
         if(userConnectionsIgnored.length>0){
             res.json({
                 message: `All Connection Requests Ignored by ${req.user.firstName} ${req.user.lastName} fetched successfully`,
@@ -82,7 +115,7 @@ userRouter.get('/user/request/received/otherInterested',userAuth,async(req,res)=
                 {toUserId: req.user._id},
                 {status: "interested"}
             ]
-        })
+        }).populate('fromUserId',['firstName', 'lastName'])
         if (userConnectionsReceived.length > 0){
             res.json({
                 message: `Users who have shown interest on ${req.user.firstName} ${req.user.lastName} profile fetched successfully`,
@@ -102,7 +135,7 @@ userRouter.get('/user/request/received/otherIgnored',userAuth,async(req,res)=>{
                 {toUserId: req.user._id},
                 {status: "ignored"}
             ]
-        })
+        }).populate('fromUserId',['firstName', 'lastName'])
         if (userConnectionsReceived.length > 0){
             res.json({
                 message: `Users who ignored ${req.user.firstName} ${req.user.lastName} profile fetched successfully`,
@@ -122,7 +155,7 @@ userRouter.get('/user/request/received/accepted',userAuth,async(req,res)=>{
                 {status: "accepted"},
                 {toUserId: req.user._id}
             ]
-        })
+        }).populate('fromUserId',['firstName', 'lastName'])
         if (userConnectionsReceivedAccepted.length > 0){
             res.json({
                 message: `All Connection Requests Received, Accepted by ${req.user.firstName} ${req.user.lastName} fetched successfully`,
@@ -142,10 +175,10 @@ userRouter.get('/user/request/received/rejected',userAuth,async(req,res)=>{
                 {status: "rejected"},
                 {toUserId: req.user._id}
             ]
-        })
+        }).populate('fromUserId',['firstName', 'lastName'])
         if(userConnectionsIgnored.length>0){
             res.json({
-                message: `All Connection Requests Received, Ignored by ${req.user.firstName} ${req.user.lastName} fetched successfully`,
+                message: `All Connection Requests Received, Rejected by ${req.user.firstName} ${req.user.lastName} fetched successfully`,
                 data: userConnectionsIgnored
             })
         }else{

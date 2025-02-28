@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 const express = require('express');
 const {userAuth} = require('../middleware/auth')
 const {User} = require('../models/user')
@@ -44,8 +46,7 @@ connectionRequestRouter.post('/request/send/:status/:toUserId',userAuth, async(r
             toUserId,
             status
         })
-        const connectionRequestData = await connectionRequest.save()
-
+        let connectionRequestData = await connectionRequest.save()
         let messageData
         if (status =="interested"){
              messageData = `${fromUserName} interested and sends connection request to ${toUserName}`
@@ -56,6 +57,56 @@ connectionRequestRouter.post('/request/send/:status/:toUserId',userAuth, async(r
             message: messageData,
             data: connectionRequestData
         })
+    }catch(err){
+        res.status(400).send("ERROR: "+err.message)
+    }
+})
+connectionRequestRouter.patch('/request/review/:status/:requestUserId',userAuth,async(req,res)=>{
+    try{
+        const requestAcceptanceStatus = req.params.status
+        const requestUserId = req.params.requestUserId
+        const query = {"status":requestAcceptanceStatus}
+        const allowedRequestReceivedStatus = ['accepted','rejected']
+        if(!allowedRequestReceivedStatus.includes(requestAcceptanceStatus)){
+            throw new Error ("Invalid request Acceptance Status: " + requestAcceptanceStatus)
+        }
+        if (!ObjectId.isValid(requestUserId)) {
+            return res.status(400).json({message:`Invalid request id: ${requestUserId}`})
+        }
+        const objectId = new ObjectId(requestUserId);
+        const requestUserGenericDetails = await User.findOne({_id:objectId})
+        if(!requestUserGenericDetails){
+            return res.status(400).json({message:`${requestUserId} not found`})
+        }
+        const requestUser = await connectionRequestModel.findOne({fromUserId:requestUserId, toUserId:req.user._id})
+        if(requestUserId == req.user._id){
+            return res.status(400).json({message:`Hi ${req.user.firstName} ${req.user.lastName}, connection request interaction to yourself is not possible`})
+        }
+        if(!requestUser){
+            return res.status(400).json({message:`Hi ${req.user.firstName} ${req.user.lastName}, no request received from ${requestUserGenericDetails.firstName} ${requestUserGenericDetails.lastName}`})
+        }
+        if(requestUser.status == "accepted"){
+            return res.status(400).json({message:`Hi ${req.user.firstName} ${req.user.lastName}, you have already accepted connection request from ${requestUserGenericDetails.firstName} ${requestUserGenericDetails.lastName}`})
+        }
+        if(requestUser.status == "rejected"){
+            return res.status(400).json({message:`Hi ${req.user.firstName} ${req.user.lastName}, you have already rejected connection request from ${requestUserGenericDetails.firstName} ${requestUserGenericDetails.lastName}`})
+        }
+        const requestUserDetails = await connectionRequestModel.findOneAndUpdate({
+            $and:[
+                {fromUserId:requestUserId},
+                {toUserId:req.user._id},
+                {status:"interested"}
+            ]
+        },query,{new: true})
+        if(!requestUserDetails){
+            return res.status(400).json({message:`Hi ${req.user.firstName} ${req.user.lastName}, people yet to show interest on your profile`})
+        }else{
+
+            return res.json({
+                message:`Request status updated to ${requestAcceptanceStatus}, ${req.user.firstName} ${req.user.lastName} ${requestAcceptanceStatus} connection request of ${requestUserGenericDetails.firstName} ${requestUserGenericDetails.lastName}`,
+                data:requestUserDetails
+            })
+        }
     }catch(err){
         res.status(400).send("ERROR: "+err.message)
     }
