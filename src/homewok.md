@@ -100,7 +100,17 @@
 - Create PATCH /profile/edit API
 - Create PATCH /profile/password API
 - Make sure validate all data in POST and PATCH API
-
+---------------------------------
+- Connection Request Schema, add validation
+- Send Connect request API
+- Think About all orner case
+- $or, $and, $nor, $not - Logical Query
+- $eq, $gt, $gte, $in, $It, $Ite, $ne and $nin - Comparison Query
+- schema.pre function
+- Read more about indexes in Mongodb
+- why do we need index - adv and disadv
+- Read article about compound index
+- 
 
 
 

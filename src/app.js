@@ -3,7 +3,8 @@ const express = require('express')
 const cookieParser = require('cookie-parser')
 const {authRouter} = require('./routes/auth')
 const {profileRouter} = require('./routes/profile')
-const {connectionRequestRouter} = require('./routes/connectionRequest')
+const {connectionRequestRouter} = require('./routes/request')
+const {userRouter} = require('./routes/user')
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(cookieParser())
 app.use('/',authRouter)
 app.use('/',profileRouter)
 app.use('/',connectionRequestRouter)
+app.use('/',userRouter)
 
 // Connect to db and listen to port 7777
 connectDb()

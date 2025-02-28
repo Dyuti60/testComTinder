@@ -8,14 +8,15 @@
 - PATCH /profile/edit
 - PATCH /profile/password
 ## connectionRequestRouter
-- POST /request/send/interested/:userId
-- POST /request/send/ignored/:userId
+- POST /request/send/interested/:toUserId
+- POST /request/send/ignored/:toUserId
 - POST /request/review/accepted/:requestId
 - POST /request/review/rejected/:requestId
 ## userRouter
-- GET user/connections - get all connections made
-- GET user/request/sent - all requests sent by sender
-- GET user/request/received - all requests received
+- GET user/request/received/accepted - get all connections made - (status Accepted)
+- GET user/request/ignored - get all user rejected - (status Ignored)
+- GET user/request/sent - all requests sent by sender - (status Interested)
+- GET user/request/received/rejected - all requests received - (status Rejected)
 - GET user/feeds - gets all users
 
 
