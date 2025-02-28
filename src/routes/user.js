@@ -6,27 +6,19 @@ const userRouter = express.Router()
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender skills about"
 userRouter.get('/registerdUsers',userAuth,async(req,res)=>{
     try{
-        // const invalidConnectionRequest = await connectionRequestModel.find({
-        //     $and:[
-        //         {$or:[
-        //             {status: "accepted"},
-        //             {status: "rejected"},
-        //             {status: "interested"},
-        //             {status: "ignored"}
-        //             ]
-        //         },
-        //         {
-        //             fromUser: req.user._id
-        //         }
-        //     ]
-        // })
-        const userFeed = await User.find({})
+        const page = parseInt(req.query.page) || 1
+        let limit = parseInt(req.query.limit) || 5
+        if(limit>10){
+            limit = 10
+        }
+        const skip =(page-1)*limit
+        const userFeed = await User.find({}).select(USER_SAFE_DATA).skip(skip).limit(limit)
 
         if (userFeed.length <=0) {
             return res.status(404).json({message: "No User Profiles available in the feed"})
         }else{
             res.json({
-                message: "All User Profiles fetched successfully",
+                message: "All Registered User Profiles fetched successfully",
                 data: userFeed
             })
         }
@@ -34,8 +26,37 @@ userRouter.get('/registerdUsers',userAuth,async(req,res)=>{
         res.status(400).json({message: `Error: ${err.message}`})
     }
 })
-userRouter.get('/user/feed',userAuth,async(req,res)=>{
-
+userRouter.get('/user/feeds',userAuth,async(req,res)=>{
+    try{
+        const page = parseInt(req.query.page) || 1
+        const limit = parseInt(req.query.limit) || 5
+        const skip =(page-1)*limit
+        const filterOutConnections = await connectionRequestModel.find({
+            $or:[
+            {fromUserId:req.user._id},
+            {toUserId: req.user._id}
+            ]
+            }
+        ).select('fromUserId toUserId')
+        const blockUsersFromFeed = new Set()
+        filterOutConnections.forEach((row)=>{
+            blockUsersFromFeed.add(row.fromUserId.toString()),
+            blockUsersFromFeed.add(row.toUserId.toString())
+        })
+        const myConnectionFeed = await User.find({
+            $and:[
+            {_id: {$nin:Array.from(blockUsersFromFeed)}},
+            {_id: {$ne:req.user._id}}
+            ]
+            }
+        ).select(USER_SAFE_DATA).skip(skip).limit(limit)
+        res.json({
+            message: `Fetched all feeds`,
+            data: myConnectionFeed
+        })
+    }catch(err){
+        res.status(400).json({message: `Error: ${err.message}`})
+    }
 })
 userRouter.get('/user/myConnections',userAuth,async(req,res)=>{
     try{
